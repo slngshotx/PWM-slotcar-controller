@@ -4,4 +4,4 @@ Project to create a basic PWM slotcar (Scalextric) controller using an ESP-32 de
 # Pre-requisites
 
 # Wiring
-![image](https://user-images.githubusercontent.com/58425116/223133469-ab29456c-4d34-4e0d-9350-c2fdec7d2a3a.png)
+![image](https://user-images.githubusercontent.com/58425116/223134441-7aa8caa7-0ec4-4615-9a27-9f6ee6811057.png)
