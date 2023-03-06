@@ -2,11 +2,11 @@
 Project to create a basic PWM slotcar (Scalextric) controller using an ESP-32 dev board
 
 # Pre-requisites
-ESP-32 Devkit board.
-BTS 7960 Dual H-bridge motor controller.
-A Slotcar controller handle to convert.
-Bits and bobs of wiring.
-Basic understanding of uploading code to the dev board - https://randomnerdtutorials.com/getting-started-with-esp32/. The ESP32 has WiFi and bluetooth a good demo for using the onboard webserver is here https://randomnerdtutorials.com/esp32-web-server-arduino-ide/.
+- ESP-32 Devkit board.
+- BTS 7960 Dual H-bridge motor controller.
+- A Slotcar controller handle to convert.
+- Bits and bobs of wiring.
+- Basic understanding of uploading code to the dev board - https://randomnerdtutorials.com/getting-started-with-esp32/. The ESP32 has WiFi and bluetooth a good demo for using the onboard webserver is here https://randomnerdtutorials.com/esp32-web-server-arduino-ide/.
 
 # Wiring
 
