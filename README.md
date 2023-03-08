@@ -1,5 +1,5 @@
 # PWM-slotcar-controller
-Project to create a basic PWM slotcar (Scalextric) controller using an ESP-32 dev board
+Project to create a basic PWM slotcar (Scalextric) controller using an ESP-32 dev board.
 
 # Pre-requisites
 - ESP-32 Devkit board.
