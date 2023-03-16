@@ -12,6 +12,8 @@ Project to create a basic PWM slotcar (Scalextric) controller using an ESP-32 de
 
 ![image](https://user-images.githubusercontent.com/58425116/223165165-bd816452-1110-48b5-a136-a6db579d64a1.png)
 
+# ESP32 power
+There will need to be an additional circuit using a simple voltage regulator that will take 10+V from the track and convert to 5V to power the board. For testing the board can be powered from the USB cable.
 
 # Controller Trigger
 The trigger could be a rotary potentiometer, a resistor board or a modified barrel resistor. If using an old resistor controller then it will need the base band connecting to the rest of the resistor. For example the image below shows a typical Parma style resistor, and the modification to make the variable resistor into a simple potentiometer.
