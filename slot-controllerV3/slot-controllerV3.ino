@@ -12,6 +12,8 @@
 #include <WebServer.h>
 
 #define __DEF_PWM_FREQUENCY__ 20000
+#define __DEF_BRAKE_SETTING__ 254
+#define __DEF_THROTTLE_SETTING__ 100
 
 #define __DEBUG__
 //#define __DEBUG_VALUES__
@@ -29,15 +31,16 @@ int iControllerValue = 0;  // value read from the controller pot
 int iPowerCurve = 0;       // defines the power curve to use
 
 // Values used in code
-bool bInitWebServer = true;      // check if the webserver is to be started
 bool bWebServerRunning = false;  // If webserver is running
 int iLoopIterations = 0;         // Count times we have looped
 
 // Webserver if used
 WebServer server(80);
 
-// Setting PWM properties
+// Setting various properties
 int iPWMFrequency = __DEF_PWM_FREQUENCY__;  // Can be changed to any freq, suggest 5000 - 25000
+int iBrakeSetting = __DEF_BRAKE_SETTING__;
+int iThrottleSetting = __DEF_THROTTLE_SETTING__;
 const int iPWMChannel = 0;
 const int iPWMResolution = 8;
 
@@ -55,9 +58,7 @@ void setup() {
   pinMode(iFwdPowerPin, OUTPUT);
   pinMode(iPowerOnPin, OUTPUT);
 
-  // Setup the PWM output channel and attach it to the output pin
-  ledcSetup(iPWMChannel, iPWMFrequency, iPWMResolution);
-  ledcAttachPin(iFwdPowerPin, iPWMChannel);
+  setupPWM();
 }
 
 // the loop routine runs over and over again forever:
@@ -70,9 +71,8 @@ void loop() {
   }
 
   if (++iLoopIterations >= 10000) {
-    // If the webserver flag is still set after 10000 iterations then start the webserver
-    if (bInitWebServer) {
-      bInitWebServer = false;
+    // Only start the webserver when we have time.
+    if (iControllerValue == 0 && !bWebServerRunning) {
       bWebServerRunning = true;
       startWebserver();
     }
@@ -84,11 +84,18 @@ void loop() {
   }
 }
 
+void setupPWM()
+{
+  // Setup the PWM output channel and attach it to the output pin
+  ledcSetup(iPWMChannel, iPWMFrequency, iPWMResolution);
+  ledcAttachPin(iFwdPowerPin, iPWMChannel);
+}
+
 /* 
  * ReadControllerValue
  *
  * Read the value of the trigger, analog read will return 0 - 4095
- * This can be converted to duty value of 0 - 255 applying any curve value
+ * This can be converted to duty value of 0 - 254 applying any curve value
  */
 void readControllerValue() {
   // read the input on the controller pin
@@ -99,8 +106,15 @@ void readControllerValue() {
     // Default is to use straight line
     case 0:
     default:
-      iControllerValue = map(iReadValue, 0, 4095, 0, 255);
+      iControllerValue = map(iReadValue, 0, 4095, 0, 254);
       break;
+  }
+  // Apply any throttle limit setting so we can reduce top end power
+  if (iThrottleSetting < 100)
+  {
+    // Simple calculation reduce controller value by iThrottleSetting %
+    // i.e. 50% power would be a max of 254 * (90 / 100) = 228
+    iControllerValue = min(iControllerValue, (int)(iControllerValue * (iThrottleSetting / 100.0)));
   }
 }
 
@@ -109,15 +123,13 @@ void readControllerValue() {
  * at the correct level using PWM
  */
 void applyTrackPower() {
-  // If controller value > 0 then apply power if it's 0 then turn power off
+  // If controller value > 0 then apply power if it's 0 then brake
+  ledcWrite(iPWMChannel, iControllerValue);
   if (iControllerValue > 0) {
-    digitalWrite(iPowerOnPin, HIGH);
-
-    // Trigger pressed so don't start the webserver
-    bInitWebServer = false;
-    ledcWrite(iPWMChannel, iControllerValue);
+    analogWrite(iPowerOnPin, 254);
   } else {
-    digitalWrite(iPowerOnPin, LOW);
+    // Vary the brakes using the supplied setting, this will PWM the on/off pin
+    analogWrite(iPowerOnPin, iBrakeSetting);
   }
 }
 /* 
