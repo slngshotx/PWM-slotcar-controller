@@ -11,9 +11,13 @@
  */
 #include <WebServer.h>
 
+// Default values if no save data
 #define __DEF_PWM_FREQUENCY__ 20000
 #define __DEF_BRAKE_SETTING__ 254
 #define __DEF_THROTTLE_SETTING__ 100
+#define __DEF_TCS_SETTING__ 0
+#define __DEF_TCS_START_SETTING__ 40
+#define __DEF_TCS_STOP_SETTING__ 140
 
 #define __DEBUG__
 //#define __DEBUG_VALUES__
@@ -28,7 +32,9 @@ const int iPowerOnPin = 33;
 
 // Values read in from controls
 int iControllerValue = 0;  // value read from the controller pot
-int iPowerCurve = 0;       // defines the power curve to use
+int iLastControllerValue = 0;
+int iControllerReadValue = 0;
+int iPowerCurve = 0;  // defines the power curve to use
 
 // Values used in code
 bool bWebServerRunning = false;  // If webserver is running
@@ -41,6 +47,9 @@ WebServer server(80);
 int iPWMFrequency = __DEF_PWM_FREQUENCY__;  // Can be changed to any freq, suggest 5000 - 25000
 int iBrakeSetting = __DEF_BRAKE_SETTING__;
 int iThrottleSetting = __DEF_THROTTLE_SETTING__;
+int iTCSSetting = __DEF_TCS_SETTING__;
+int iTCSStartSetting = __DEF_TCS_START_SETTING__;
+int iTCSStopSetting = __DEF_TCS_STOP_SETTING__;
 const int iPWMChannel = 0;
 const int iPWMResolution = 8;
 
@@ -66,16 +75,12 @@ void loop() {
   readControllerValue();
   applyTrackPower();
 
-  if (bWebServerRunning) {
-    server.handleClient();
+  // Things to do only when controller isn't in use
+  if (iControllerReadValue == 0) {
+    doIdleProcessing();
   }
 
   if (++iLoopIterations >= 10000) {
-    // Only start the webserver when we have time.
-    if (iControllerValue == 0 && !bWebServerRunning) {
-      bWebServerRunning = true;
-      startWebserver();
-    }
     iLoopIterations = 0;
     // print out the value you read:
 #if defined(__DEBUG_VALUES__)
@@ -84,8 +89,7 @@ void loop() {
   }
 }
 
-void setupPWM()
-{
+void setupPWM() {
   // Setup the PWM output channel and attach it to the output pin
   ledcSetup(iPWMChannel, iPWMFrequency, iPWMResolution);
   ledcAttachPin(iFwdPowerPin, iPWMChannel);
@@ -99,23 +103,39 @@ void setupPWM()
  */
 void readControllerValue() {
   // read the input on the controller pin
-  int iReadValue = analogRead(iControllerPin);
+  iControllerReadValue = analogRead(iControllerPin);
 
-  // Now apply any curve we are using
-  switch (iPowerCurve) {
-    // Default is to use straight line
-    case 0:
-    default:
-      iControllerValue = map(iReadValue, 0, 4095, 0, 254);
-      break;
+  // Anything over 4000 is max power
+  if (iControllerReadValue > 4000) {
+    iControllerValue = 254;
+  } else {
+    // Now apply any curve we are using
+    switch (iPowerCurve) {
+      // Default is to use straight line
+      case 0:
+      default:
+        iControllerValue = map(iControllerReadValue, 0, 4095, 0, 254);
+        break;
+    }
   }
+
   // Apply any throttle limit setting so we can reduce top end power
-  if (iThrottleSetting < 100)
-  {
+  if (iThrottleSetting < 100) {
     // Simple calculation reduce controller value by iThrottleSetting %
     // i.e. 50% power would be a max of 254 * (90 / 100) = 228
     iControllerValue = min(iControllerValue, (int)(iControllerValue * (iThrottleSetting / 100.0)));
   }
+
+  // Apply any traction control setting, delays increase between 1 & 10 loop iterations
+  if (iTCSSetting > 0 && (iControllerValue >= iTCSStartSetting && iLastControllerValue <= iTCSStopSetting)) {
+    if (iLoopIterations % iTCSSetting == 0) {
+      iControllerValue = min(iControllerValue, iLastControllerValue + 1);
+    } else {
+      iControllerValue = iLastControllerValue;
+    }
+  }
+
+  iLastControllerValue = iControllerValue;
 }
 
 /*
@@ -132,6 +152,19 @@ void applyTrackPower() {
     analogWrite(iPowerOnPin, iBrakeSetting);
   }
 }
+
+/*
+ * Low priority stuff to only do when the controller isn't pressed
+ */
+void doIdleProcessing() {
+  if (bWebServerRunning) {
+    server.handleClient();
+  } else {
+    bWebServerRunning = true;
+    startWebserver();
+  }
+}
+
 /* 
  * Only used when __DEBUG__ is enabled to display
  */
