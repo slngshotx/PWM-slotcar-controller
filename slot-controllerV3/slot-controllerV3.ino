@@ -18,6 +18,7 @@
 #define __DEF_TCS_SETTING__ 0
 #define __DEF_TCS_START_SETTING__ 40
 #define __DEF_TCS_STOP_SETTING__ 140
+#define __DEF_COAST_SETTING__ 140
 
 #define __DEBUG__
 //#define __DEBUG_VALUES__
@@ -50,6 +51,7 @@ int iThrottleSetting = __DEF_THROTTLE_SETTING__;
 int iTCSSetting = __DEF_TCS_SETTING__;
 int iTCSStartSetting = __DEF_TCS_START_SETTING__;
 int iTCSStopSetting = __DEF_TCS_STOP_SETTING__;
+int iCoastSetting = __DEF_COAST_SETTING__;
 const int iPWMChannel = 0;
 const int iPWMResolution = 8;
 
