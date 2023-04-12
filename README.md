@@ -20,3 +20,8 @@ The trigger could be a rotary potentiometer, a resistor board or a modified barr
 
 ![image](https://user-images.githubusercontent.com/58425116/223164797-4c20bdc1-1c4f-499e-ab69-b8096d39cf82.png)
 
+# Webserver configuration
+The Webserver will show up at 192.168.1.1 on the WiFi network slingshot-controller.
+All values are saved and will be loaded on power on.
+
+
