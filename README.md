@@ -10,7 +10,7 @@ Project to create a basic PWM slotcar (Scalextric) controller using an ESP-32 de
 
 # Wiring
 
-![image](https://user-images.githubusercontent.com/58425116/223165165-bd816452-1110-48b5-a136-a6db579d64a1.png)
+![image](https://user-images.githubusercontent.com/58425116/233952739-11b20489-bafc-4a8d-982e-e2664df13e9d.png)
 
 # ESP32 power
 There will need to be an additional circuit using a simple voltage regulator that will take 10+V from the track and convert to 5V to power the board. For testing the board can be powered from the USB cable.
