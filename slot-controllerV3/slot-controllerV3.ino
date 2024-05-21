@@ -10,6 +10,7 @@
  *
  */
 #include <WebServer.h>
+#include <Bluepad32.h>
 
 // Default values if no save data
 #define __DEF_PWM_FREQUENCY__ 20000
@@ -22,7 +23,7 @@
 #define __DEF_CURVEVAL__ 1
 
 #define __DEBUG__
-//#define __DEBUG_VALUES__
+#define __DEBUG_VALUES__
 
 // Pins used
 // Controller value analog pin (potentiometer)
@@ -66,6 +67,8 @@ void setup() {
   // Read the preferences
   getPreferences();
 
+  setupGamePad();
+
   // Setup I/O pins
   pinMode(iControllerPin, INPUT_PULLUP);
   pinMode(iFwdPowerPin, OUTPUT);
@@ -93,6 +96,8 @@ void loop() {
     printDebugValues();
 #endif
   }
+
+  delay(3);
 }
 
 void setupPWM() {
@@ -109,7 +114,9 @@ void setupPWM() {
  */
 void readControllerValue() {
   // read the input on the controller pin
-  iControllerReadValue = analogRead(iControllerPin);
+  // Don't use, using gamepad instead
+  // iControllerReadValue = analogRead(iControllerPin);
+  gamePadLoop();
 
   // Anything over 4070 is max power
   if (iControllerReadValue > 4070) {
