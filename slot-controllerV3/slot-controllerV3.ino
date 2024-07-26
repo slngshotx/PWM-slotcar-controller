@@ -54,7 +54,6 @@ int iTCSStopSetting = __DEF_TCS_STOP_SETTING__;
 int iCoastSetting = __DEF_COAST_SETTING__;
 float fCurveVal = __DEF_CURVEVAL__;
 
-const int iPWMChannel = 0;
 const int iPWMResolution = 8;
 
 // the setup routine runs once when you press reset:
@@ -97,8 +96,7 @@ void loop() {
 
 void setupPWM() {
   // Setup the PWM output channel and attach it to the output pin
-  ledcSetup(iPWMChannel, iPWMFrequency, iPWMResolution);
-  ledcAttachPin(iFwdPowerPin, iPWMChannel);
+  ledcAttach(iFwdPowerPin, iPWMFrequency, iPWMResolution);
 }
 
 /* 
@@ -134,7 +132,7 @@ void readControllerValue() {
  */
 void applyTrackPower() {
   // If controller value > 0 then apply power if it's 0 then brake
-  ledcWrite(iPWMChannel, iControllerValue);
+  ledcWrite(iFwdPowerPin, iControllerValue);
   if (iControllerValue > 0) {
     analogWrite(iPowerOnPin, 255);
   } else {
