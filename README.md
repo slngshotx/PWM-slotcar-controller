@@ -26,6 +26,7 @@ All values are saved and will be loaded on power on.
 
 # Download and getting started
 For those not used to Github, probably the simplest way to get started is as follows. This assumes you have already installed the Arduino IDE, there are lots of articles on installing and using the Arduino IDE i.e. https://lastminuteengineers.com/getting-started-with-esp32/
+I'd suggest you scan the above article and get the blink example running if you are new to Arduino programming.
 
 - Download a zip file containing the source code from here https://github.com/slngshotx/PWM-slotcar-controller/releases.
 - Extract or uncompress the zip file somewhere on your local disk.
