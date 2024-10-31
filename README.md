@@ -24,4 +24,11 @@ The trigger could be a rotary potentiometer, a resistor board or a modified barr
 The Webserver will show up at 192.168.1.1 on the WiFi network slingshot-controller.
 All values are saved and will be loaded on power on.
 
+# Download and getting started
+For those not used to Github, probably the simplest way to get started is as follows. This assumes you have already installed the Arduino IDE, there are lots of articles on installing and using the Arduino IDE i.e. https://lastminuteengineers.com/getting-started-with-esp32/
+
+- Download a zip file containing the source code from here https://github.com/slngshotx/PWM-slotcar-controller/releases.
+- Extract or uncompress the zip file somewhere on your local disk.
+- Open the uncompressed folder and double click the file slot-controllerv3.ino. This should open all 3 files in the Arduino IDE.
+- In the Arduino IDE select the COM port and board type (probably "ESP32 Devkit") and compile and upload the code to your ESP32.
 
