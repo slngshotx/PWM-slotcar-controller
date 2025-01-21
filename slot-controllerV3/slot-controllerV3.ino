@@ -30,8 +30,8 @@
 const int iControllerPin = 34;
 
 // Pins used to control the motor output
-const int iFwdPowerPin = 32;
-const int iPowerOnPin = 33;
+const int iFwdPowerPin = 22;
+const int iPowerOnPin = 23;
 
 // Values read in from controls
 int iControllerValue = 0;  // value read from the controller pot
