@@ -9,7 +9,7 @@ Project to create a basic PWM slotcar (Scalextric) controller using an ESP-32 de
 - Basic understanding of uploading code to the dev board - https://randomnerdtutorials.com/getting-started-with-esp32/. The ESP32 has WiFi and bluetooth a good demo for using the onboard webserver is here https://randomnerdtutorials.com/esp32-web-server-arduino-ide/.
 
 # Wiring
-<img width="374" alt="image" src="https://github.com/user-attachments/assets/4c4bfab5-d394-4c0b-a611-3c1ac10a3f3f" />
+<img width="441" alt="image" src="https://github.com/user-attachments/assets/b84d4036-5129-40fb-81f5-412c16ac61fe" />
 
 # ESP32 power
 There will need to be an additional circuit using a simple voltage regulator that will take 10+V from the track and convert to 5V to power the board. For testing the board can be powered from the USB cable.
