@@ -41,10 +41,17 @@ void startWebserver() {
 
   server.on("/", handleOnConnect);
   server.on("/put", handleSubmit);
+  server.on("/preset", handlePresetSelect);
   server.onNotFound(handleNotFound);
 
   server.begin();
 }
+
+void handlePresetSelect() {
+    iSelectedPreset = server.arg(0).toInt();
+    getPreferences();
+    server.send(200, "text/html", SendHTML());
+  }
 
 /* 
  * handleSubmit
@@ -128,9 +135,17 @@ String SendHTML() {
   ptr += "</style>\n";
   ptr += "</head>\n";
   ptr += "<body>\n";
-  ptr += "<h2>Slingshot Controller V3 Config</h2>\n";
+  ptr += "<h2>Slingshot Controller V3.1 Config</h2>\n";
   ptr += "<form action=\"/put\">";
  
+  ptr += "Preset 1<input type=\"radio\" value=\"1\" onclick=\"window.location='/preset?selectedPreset=1';\"";
+  ptr += iSelectedPreset == 1 ?  "checked>" : ">";
+  ptr += "Preset 2<input type=\"radio\" value=\"2\" onclick=\"window.location='/preset?selectedPreset=2';\"";
+  ptr += iSelectedPreset == 2 ?  "checked>" : ">";
+  ptr += "Preset 3<input type=\"radio\" value=\"3\" onclick=\"window.location='/preset?selectedPreset=3';\"";
+  ptr += iSelectedPreset == 3 ?  "checked>" : ">";
+  ptr += "<hr><br>";
+
   ptr += "<label> PWM Freq(Hz) (200-25000) </label>";
   ptr += "<input type=\"range\" min=\"200\" max=\"25000\" step=\"100\" name=\"sPWMFreq\" oninput=\"this.nextElementSibling.value = this.value\" value=\"";
   ptr += String(iPWMFrequency);
@@ -139,13 +154,16 @@ String SendHTML() {
   ptr += "</output><br>";
 
   ptr += "<label> Brakes (0-255) </label>";
+#ifdef __USE_BRAKE_POT__
+  ptr += "<label> Brakes (0-255) (brake pot enabled)</label>";
+  ptr += "<input disabled type=\"range\" min=\"0\" max=\"255\" name=\"sBrake\"";
+#else
   ptr += "<input type=\"range\" min=\"0\" max=\"255\" name=\"sBrake\" oninput=\"this.nextElementSibling.value = this.value\" value=\"";
   ptr += String(iBrakeSetting);
   ptr += "\"> <output>";
   ptr += String(iBrakeSetting);
+#endif
   ptr += "</output><br>";
-
-  ptr += "==== BELOW NOT CURRENTLY IMPLEMENTED ===";
 
   ptr += "<label> Throttle(%) (0-100) </label>";
   ptr += "<input type=\"range\" min=\"0\" max=\"100\" name=\"sThrottle\" oninput=\"this.nextElementSibling.value = this.value\" value=\"";
@@ -153,6 +171,8 @@ String SendHTML() {
   ptr += "\"> <output>";
   ptr += String(iThrottleSetting);
   ptr += "</output><br><hr>";
+
+  ptr += "<br>==== BELOW NOT CURRENTLY IMPLEMENTED ===<br>";
 
   ptr += "<label> Min Speed (0-255) </label>";
   ptr += "<input type=\"range\" min=\"0\" max=\"255\" name=\"sCoast\" oninput=\"this.nextElementSibling.value = this.value\" value=\"";

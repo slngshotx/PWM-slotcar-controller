@@ -19,8 +19,18 @@
 void getPreferences() {
   Preferences controllerPrefs;
 
-  controllerPrefs.begin("controlPrefs", true);
+  // Save the presets being used
+  controllerPrefs.begin("controlPrefs", false);
+  // After boot get the last saved preset
+  if (iSelectedPreset < 0) {
+    iSelectedPreset = controllerPrefs.getInt("sSelectedPreset", 1);
+  }
 
+  controllerPrefs.putInt("sSelectedPreset", iSelectedPreset);
+  controllerPrefs.end();
+
+  String prefs = "preset" + iSelectedPreset;
+  controllerPrefs.begin(prefs.c_str(), true);
   iPWMFrequency = controllerPrefs.getInt("sPWMFreq", __DEF_PWM_FREQUENCY__);
   iBrakeSetting = controllerPrefs.getInt("sBrake", __DEF_BRAKE_SETTING__);
   iThrottleSetting = controllerPrefs.getInt("sThrottle", __DEF_THROTTLE_SETTING__);
@@ -30,7 +40,6 @@ void getPreferences() {
   iCoastSetting = controllerPrefs.getInt("sCoast", __DEF_COAST_SETTING__);
   fCurveVal = controllerPrefs.getFloat("sCurveVal", __DEF_CURVEVAL__);
 
-  controllerPrefs.end();
 
 #if defined(__DEBUG__)
   Serial.println("Read preferences");
@@ -46,7 +55,13 @@ void getPreferences() {
 void putPreferences() {
   Preferences controllerPrefs;
 
-  controllerPrefs.begin("controlPrefs", false);
+  // Get value from appropriate preset
+  controllerPrefs.begin("controlPrefs", true);
+  iSelectedPreset = controllerPrefs.getInt("sSelectedPreset", 1);
+  controllerPrefs.end();
+
+  String prefs = "preset" + iSelectedPreset;
+  controllerPrefs.begin(prefs.c_str(), false);
 
   controllerPrefs.putInt("sPWMFreq", iPWMFrequency);
   controllerPrefs.putInt("sBrake", iBrakeSetting);
@@ -56,6 +71,7 @@ void putPreferences() {
   controllerPrefs.putInt("sTCSStop", iTCSStopSetting);
   controllerPrefs.putInt("sCoast", iCoastSetting);
   controllerPrefs.putFloat("sCurveVal", fCurveVal);
+  controllerPrefs.putInt("sSelectedPreset", iSelectedPreset);
 
   controllerPrefs.end();
 
@@ -91,4 +107,3 @@ void printPrefValues() {
   Serial.println(fCurveVal);
 }
 #endif
-

@@ -11,6 +11,9 @@
  */
 #include <WebServer.h>
 
+// To use a hard brake control i.e. a potentiometer then uncomment the line below
+//#define __USE_BRAKE_POT__
+
 // Default values if no save data
 #define __DEF_PWM_FREQUENCY__ 20000
 #define __DEF_BRAKE_SETTING__ 255
@@ -27,6 +30,8 @@
 // Pins used
 // Controller value analog pin (potentiometer)
 const int iControllerPin = 34;
+// Used for optional brake pot
+const int iBrakePin = 35;
 
 // Pins used to control the motor output
 const int iFwdPowerPin = 32;
@@ -53,6 +58,8 @@ int iTCSStartSetting = __DEF_TCS_START_SETTING__;
 int iTCSStopSetting = __DEF_TCS_STOP_SETTING__;
 int iCoastSetting = __DEF_COAST_SETTING__;
 float fCurveVal = __DEF_CURVEVAL__;
+int iLastPWMFrequency = iPWMFrequency;
+int iSelectedPreset = -1;
 
 const int iPWMResolution = 8;
 
@@ -67,6 +74,7 @@ void setup() {
 
   // Setup I/O pins
   pinMode(iControllerPin, INPUT_PULLUP);
+  pinMode(iBrakePin, INPUT_PULLUP);
   pinMode(iFwdPowerPin, OUTPUT);
   pinMode(iPowerOnPin, OUTPUT);
 
@@ -76,7 +84,9 @@ void setup() {
 // the loop routine runs over and over again forever:
 void loop() {
   readControllerValue();
+  readSettingsValue();
   applyTrackPower();
+  resetPWMFrequency();
 
   // Things to do only when controller isn't in use
   if (iControllerReadValue == 0) {
@@ -97,6 +107,15 @@ void loop() {
 void setupPWM() {
   // Setup the PWM output channel and attach it to the output pin
   ledcAttach(iFwdPowerPin, iPWMFrequency, iPWMResolution);
+  iLastPWMFrequency = iPWMFrequency;
+}
+
+void resetPWMFrequency() {
+  if (iPWMFrequency != iLastPWMFrequency) {
+    // Reset the PWM frequency
+    ledcChangeFrequency(iFwdPowerPin, iPWMFrequency, iPWMResolution);
+    iLastPWMFrequency = iPWMFrequency;
+  }
 }
 
 /* 
@@ -151,6 +170,17 @@ void doIdleProcessing() {
     bWebServerRunning = true;
     startWebserver();
   }
+}
+
+/* 
+ * ReadSettingsValue
+ *
+ * Read the value of any hard controls from the pots, analog read will return 0 - 4095
+ */
+void readSettingsValue() {
+#ifdef __USE_BRAKE_POT__
+  iBrakeSetting = min(255, (int)(map(analogRead(iBrakePin), 0, 4095, 0, 64) * 4));
+#endif
 }
 
 /* 
