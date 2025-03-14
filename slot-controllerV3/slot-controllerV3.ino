@@ -58,7 +58,7 @@ int iTCSStartSetting = __DEF_TCS_START_SETTING__;
 int iTCSStopSetting = __DEF_TCS_STOP_SETTING__;
 int iCoastSetting = __DEF_COAST_SETTING__;
 float fCurveVal = __DEF_CURVEVAL__;
-int iLastPWMFrequency = iPWMFrequency;
+int iLastPWMFrequency = -1;
 int iSelectedPreset = -1;
 
 const int iPWMResolution = 8;
@@ -75,7 +75,6 @@ void setup() {
   // Setup I/O pins
   pinMode(iControllerPin, INPUT_PULLUP);
   pinMode(iBrakePin, INPUT_PULLUP);
-  pinMode(iFwdPowerPin, OUTPUT);
   pinMode(iPowerOnPin, OUTPUT);
 
   setupPWM();
@@ -107,7 +106,6 @@ void loop() {
 void setupPWM() {
   // Setup the PWM output channel and attach it to the output pin
   ledcAttach(iFwdPowerPin, iPWMFrequency, iPWMResolution);
-  iLastPWMFrequency = iPWMFrequency;
 }
 
 void resetPWMFrequency() {

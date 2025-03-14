@@ -81,8 +81,6 @@ void putPreferences() {
 #endif
 
   getPreferences();
-  // Reset the PWM values if they have changed
-  setupPWM();
 }
 
 /* 
