@@ -47,13 +47,13 @@ void processGamepad(ControllerPtr ctl) {
   // By query each button individually:
   //  a(), b(), x(), y(), l1(), etc...
   if (ctl->throttle()) {
-    iControllerReadValue = ctl->throttle() * 4;
+    iControllerReadValue = map(ctl->throttle(), 0, 1023, 0, 4095);
   } else if (ctl->axisRY() ) {
-    iControllerReadValue = abs(ctl->axisRY()) * 8;
+    iControllerReadValue = map(ctl->axisRY(), 0, 511, 0, 4095);
   }
   if (ctl->brake()) {
     iControllerReadValue = 0;
-    iBrakeSetting = ctl->brake() / 4;
+    iBrakeSetting = map(ctl->brake(), 0, 1023, 0, 255);
   }
 
   if (ctl->x()) {

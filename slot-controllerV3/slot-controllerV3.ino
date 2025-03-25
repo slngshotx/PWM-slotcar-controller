@@ -119,7 +119,7 @@ void readControllerValue() {
   gamePadLoop();
 
   // Anything over 4070 is max power
-  if (iControllerReadValue > 4070) {
+  if (iControllerReadValue > 4090) {
     iControllerValue = 255;
   } else {
     iControllerValue = map(iControllerReadValue, 0, 4095, 0, 255);
